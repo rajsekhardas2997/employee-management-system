@@ -3,6 +3,7 @@ package com.raj.employeemanagementsystem.service;
 import com.raj.employeemanagementsystem.entity.Employee;
 import com.raj.employeemanagementsystem.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
+import com.raj.employeemanagementsystem.exception.EmployeeNotFoundException;
 
 import java.util.List;
 
@@ -21,7 +22,10 @@ public class EmployeeService {
 
     public Employee updateEmployee(Long id, Employee updatedEmployee) {
 
-        Employee employee = employeeRepository.findById(id).orElse(null);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EmployeeNotFoundException(
+                                "Employee not found with id " + id));
 
         employee.setName(updatedEmployee.getName());
         employee.setEmail(updatedEmployee.getEmail());
@@ -32,7 +36,10 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElse(null);
+        return employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EmployeeNotFoundException(
+                                "Employee not found with id " + id));
     }
 
     public List<Employee> getAllEmployees() {
@@ -40,6 +47,10 @@ public class EmployeeService {
     }
 
     public void deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EmployeeNotFoundException(
+                                "Employee not found with id " + id));
+        employeeRepository.delete(employee);
     }
 }
